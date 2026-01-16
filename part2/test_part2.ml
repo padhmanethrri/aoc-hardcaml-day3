@@ -3,14 +3,12 @@ open Hardcaml
 module D = Day3_part2
 module Sim = Cyclesim.With_interface (D.I) (D.O)
 
-(* ---------- helper: take first n elements (Stdlib-safe) ---------- *)
 let rec take n lst =
   match n, lst with
   | 0, _ -> []
   | _, [] -> []
   | n, x :: xs -> x :: take (n - 1) xs
 
-(* ---------- greedy algorithm (correct, proven) ---------- *)
 let greedy_12 (s : string) : int list =
   let digits =
     List.init (String.length s)
@@ -21,10 +19,7 @@ let greedy_12 (s : string) : int list =
 
   List.iter
     (fun d ->
-      while !drops > 0
-            && !stack <> []
-            && List.hd !stack < d
-      do
+      while !drops > 0 && !stack <> [] && List.hd !stack < d do
         stack := List.tl !stack;
         decr drops
       done;
@@ -33,7 +28,6 @@ let greedy_12 (s : string) : int list =
 
   !stack |> List.rev |> take 12
 
-(* ---------- simulation ---------- *)
 let () =
   let scope = Scope.create ~flatten_design:true () in
   let sim = Sim.create (D.create scope) in
@@ -60,7 +54,6 @@ let () =
     end_bank ()
   in
 
-  (* ---------- read input.txt ---------- *)
   let ic = open_in "input.txt" in
   (try
      while true do
