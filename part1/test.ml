@@ -9,37 +9,28 @@ let () =
   let i = Cyclesim.inputs sim in
   let o = Cyclesim.outputs sim in
 
-  (* One Cyclesim.cycle = one clock *)
   let cycle () = Cyclesim.cycle sim in
 
-  (* Send one digit *)
   let send d =
     i.digit := Bits.of_int ~width:4 d;
     i.bank_end := Bits.gnd;
     cycle ()
   in
 
-  (* End one bank / line *)
   let end_bank () =
     i.bank_end := Bits.vdd;
     cycle ();
     i.bank_end := Bits.gnd
   in
 
-  (* Send one full line *)
   let send_line s =
     String.iter
       (fun ch ->
         let d = Char.code ch - Char.code '0' in
-        send d
-      )
+        send d)
       s;
     end_bank ()
   in
-
-  (* ===============================
-     READ INPUT.TXT (STDLIB WAY)
-     =============================== *)
 
   let ic = open_in "input.txt" in
   (try
@@ -51,7 +42,6 @@ let () =
    with End_of_file ->
      close_in ic);
 
-  (* Final settle cycle *)
   cycle ();
 
   Printf.printf "FINAL RESULT = %d\n"
