@@ -1,0 +1,5 @@
+(executable
+ (name test_part2)
+ (modules test_part2 day3_part2)
+ (libraries hardcaml)
+ (preprocess (pps ppx_hardcaml)))
