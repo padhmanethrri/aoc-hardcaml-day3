@@ -25,14 +25,12 @@ let create (_ : Scope.t) (i : _ I.t) =
   let acc_q = reg spec acc_w in
   let sum_q = reg spec sum_w in
 
-  (* acc = acc*10 + digit *)
   let acc_times_10 = (sll acc_q 3) +: (sll acc_q 1) in
   assign acc_w
     (mux2 i.bank_end
        (zero 64)
        (acc_times_10 +: uresize i.digit 64));
 
-  (* sum += acc at bank_end *)
   assign sum_w
     (mux2 i.bank_end
        (sum_q +: acc_q)
