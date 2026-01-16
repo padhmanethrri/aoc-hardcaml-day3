@@ -19,36 +19,30 @@ end
 let create (_scope : Scope.t) (i : _ I.t) =
   let spec = Reg_spec.create ~clock:i.clk () in
 
-  (* wires *)
   let best_pair_w = wire 8 in
   let best_tens_w = wire 4 in
   let sum_w       = wire 16 in
 
-  (* registers *)
   let best_pair_q = reg spec best_pair_w in
   let best_tens_q = reg spec best_tens_w in
   let sum_q       = reg spec sum_w in
 
-  (* candidate = 10 * best_tens(previous) + current digit *)
   let ten_tens =
     (sll (uresize best_tens_q 8) 3) +:
     (sll (uresize best_tens_q 8) 1)
   in
   let candidate = ten_tens +: uresize i.digit 8 in
 
-  (* update best pair ONLY from previous tens *)
   assign best_pair_w
     (mux2 i.bank_end
        (zero 8)
        (mux2 (candidate >: best_pair_q) candidate best_pair_q));
 
-  (* update best tens AFTER pair computation *)
   assign best_tens_w
     (mux2 i.bank_end
        (zero 4)
        (mux2 (i.digit >: best_tens_q) i.digit best_tens_q));
 
-  (* accumulate sum *)
   assign sum_w
     (mux2 i.bank_end
        (sum_q +: uresize best_pair_q 16)
